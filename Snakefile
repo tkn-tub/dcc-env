@@ -15,7 +15,7 @@ rule configure:
         cpp=multiext("src/protobuf/veinsgym.pb.", "cc", "h"),
     output: "src/Makefile"
     params:
-        include_flags = ' '.join(['-I.', '-I../lib/veins/src']),
+        include_flags = ' '.join(['-I.', '-I../lib/veins/src', '-I../lib/zmq/src']),
         link_flags = ' '.join(['-L../lib/veins/src/', '-lveins\\$\(D\)', '-lzmq', '-lprotobuf']),
         flags = ' '.join(['-f', '--deep', '-o', 'experiment', '-O', 'out']),
     shell: "env -C src opp_makemake {params.flags} {params.include_flags} {params.link_flags}"

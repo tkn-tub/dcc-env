@@ -101,11 +101,8 @@ void DCCApp::handleLowerMsg(cMessage* msg)
 double DCCApp::channelBusyRatio(simtime_t windowSize) const
 {
     if (channelBusyHistory.empty()) {
-        // Note: considering no data as busy is harder!
-        //       If the recorded history was shorter than the window size, we would need to make up for that.
-        //       By considereing no data as idle, this comes for free.
-        EV_TRACE << "Channel busy history empty, considering channel idle\n";
-        return 0.0;
+        EV_TRACE << "Channel busy history empty, considering as busy\n";
+        return 1.0;
     }
 
     simtime_t busyTime = 0;
@@ -120,6 +117,7 @@ double DCCApp::channelBusyRatio(simtime_t windowSize) const
             if (channelBusy) { // channel is busy
                 busyTime += currentTime - windowEnd;
             }
+            currentTime = windowEnd;
             break;
         }
         if (channelBusy) { // channel is busy
@@ -127,6 +125,10 @@ double DCCApp::channelBusyRatio(simtime_t windowSize) const
         }
         currentTime = recordTime;
     }
+
+    // make up for missing time if we don't have enough history -- we treat unknown time as busy time
+    busyTime += std::max(SimTime(0), currentTime - windowEnd);
+
     EV_TRACE << "Channel busy time was " << busyTime << " for window " << windowSize << "\n";
     return busyTime / windowSize;
 }

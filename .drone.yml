@@ -1,0 +1,14 @@
+---
+kind: pipeline
+name: default
+
+steps:
+- name: build
+  image: car2x/docker-veins-0.0.4:d10-v5.0-o5.6.1-s1.5.0
+  commands:
+    - export PATH="$PATH:/opt/omnetpp/bin:/opt/sumo/bin"
+    - apt-get update && apt-get install -y python3-pip python3-wheel protobuf-compiler libprotobuf-dev libzmq3-dev
+    - python3 -m pip install snakemake
+    - snakemake -jall
+    - cd scenario
+    - ./run -- -u Cmdenv --cmdenv-express-mode=true --sim-time-limit=10s

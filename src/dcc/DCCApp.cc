@@ -104,9 +104,9 @@ double DCCApp::channelBusyRatio(simtime_t windowSize) const
     simtime_t busyTime = 0;
     simtime_t currentTime = simTime();
     const simtime_t windowEnd = simTime() - windowSize;
-    for (size_t i=channelBusyHistory.size()-1; i >= 0; --i) {
-        const simtime_t recordTime = channelBusyHistory.at(i).first;
-        const bool channelBusy = channelBusyHistory.at(i).second;
+    for (auto&& iter = channelBusyHistory.rbegin(); iter != channelBusyHistory.rend(); ++iter) {
+        const simtime_t recordTime = iter->first;
+        const bool channelBusy = iter->second;
 
         if (recordTime <= windowEnd) {
             // end of window reached, take last section and return

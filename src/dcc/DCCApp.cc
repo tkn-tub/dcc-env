@@ -39,11 +39,7 @@ void DCCApp::initialize(int stage)
 
     if (stage == 0) {
         // set up beaconing timer
-        auto triggerBeacon = [this]() { this->beacon(); };
-        auto timerSpecBeacon = TimerSpecification(triggerBeacon)
-            .relativeStart(uniform(0, par("beaconIntervalRelaxed")))
-            .interval(par("beaconIntervalRelaxed"));
-        beaconHandle = timerManager.create(timerSpecBeacon);
+        rescheduleBeacon(currentBeaconInterval(), 0);
 
         // set up sampling timer
         timerManager.create(
@@ -131,6 +127,33 @@ double DCCApp::channelBusyRatio(simtime_t windowSize) const
     return busyTime / windowSize;
 }
 
+simtime_t DCCApp::currentBeaconInterval() const
+{
+    switch (state) {
+        case State::RELAXED:
+            return par("beaconIntervalRelaxed").doubleValue();
+            break;
+        case State::ACTIVE:
+            return par("beaconIntervalActive").doubleValue();
+            break;
+        case State::RESTRICTIVE:
+            return par("beaconIntervalRestrictive").doubleValue();
+            break;
+    }
+}
+
+void DCCApp::rescheduleBeacon(simtime_t beaconInterval, TimerManager::TimerHandle handle)
+{
+    if (handle != 0) {
+        timerManager.cancel(handle);
+    }
+    beaconHandle = timerManager.create(
+        TimerSpecification([this]() { this->beacon(); })
+        .relativeStart(uniform(0, beaconInterval))
+        .interval(beaconInterval)
+    );
+}
+
 void DCCApp::sampleDCC()
 {
     double channelBusyRatioUp = channelBusyRatio(par("rampUpWindow"));
@@ -157,7 +180,9 @@ void DCCApp::switchToState(State newState)
     EV_INFO << "DCC state switch: " << state << " -> " << newState << "\n";
     state = newState;
 
-    // TODO: re-schedule next beacon
+    // re-schedule next beacon
+    auto beaconInterval = currentBeaconInterval();
+    rescheduleBeacon(beaconInterval, beaconHandle);
 }
 
 std::ostream& operator<<(std::ostream& os, DCCApp::State state)

@@ -58,11 +58,13 @@ protected:
 
 private:
     std::vector<std::pair<simtime_t, bool>> channelBusyHistory;
-    TimerManager::TimerHandle beaconHandle;
+    TimerManager::TimerHandle beaconHandle = 0;
     State state = State::RESTRICTIVE;
 
 
     double channelBusyRatio(simtime_t windowSize) const;
+    simtime_t currentBeaconInterval() const;
+    void rescheduleBeacon(simtime_t beaconInterval, TimerManager::TimerHandle handle=0);
     void sampleDCC();
     void switchToState(State newState);
 };

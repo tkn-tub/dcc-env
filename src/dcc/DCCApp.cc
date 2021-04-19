@@ -91,5 +91,38 @@ void DCCApp::handleLowerMsg(cMessage* msg)
     cancelAndDelete(msg);
 }
 
+double DCCApp::channelBusyRatio(simtime_t windowSize) const
+{
+    if (channelBusyHistory.empty()) {
+        // Note: considering no data as busy is harder!
+        //       If the recorded history was shorter than the window size, we would need to make up for that.
+        //       By considereing no data as idle, this comes for free.
+        EV_TRACE << "Channel busy history empty, considering channel idle\n";
+        return 0.0;
+    }
+
+    simtime_t busyTime = 0;
+    simtime_t currentTime = simTime();
+    const simtime_t windowEnd = simTime() - windowSize;
+    for (size_t i=channelBusyHistory.size()-1; i >= 0; --i) {
+        const simtime_t recordTime = channelBusyHistory.at(i).first;
+        const bool channelBusy = channelBusyHistory.at(i).second;
+
+        if (recordTime <= windowEnd) {
+            // end of window reached, take last section and return
+            if (channelBusy) { // channel is busy
+                busyTime += currentTime - windowEnd;
+            }
+            break;
+        }
+        if (channelBusy) { // channel is busy
+            busyTime += currentTime - recordTime;
+        }
+        currentTime = recordTime;
+    }
+    EV_TRACE << "Channel busy time was " << busyTime << " for window " << windowSize << "\n";
+    return busyTime / windowSize;
+}
+
 } // namespace dcc
 } // namespace veins

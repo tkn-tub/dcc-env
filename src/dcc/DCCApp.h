@@ -52,6 +52,8 @@ protected:
 
 private:
     std::vector<std::pair<simtime_t, bool>> channelBusyHistory;
+
+    double channelBusyRatio(simtime_t windowSize) const;
 };
 
 } // namespace dcc

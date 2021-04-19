@@ -46,11 +46,11 @@ void DCCApp::initialize(int stage)
         beaconHandle = timerManager.create(timerSpecBeacon);
 
         // set up sampling timer
-        auto triggerSampling = [this]() { this->sampleDCC(); };
-        auto timerSpecSampling = TimerSpecification(triggerSampling)
-            .relativeStart(uniform(0, par("beaconIntervalRelaxed")))
-            .interval(par("beaconIntervalRelaxed"));
-        timerManager.create(timerSpecSampling);
+        timerManager.create(
+            TimerSpecification([this]() { this->sampleDCC(); })
+            .relativeStart(uniform(0, par("stateCheckInterval")))
+            .interval(par("stateCheckInterval"))
+        );
 
         // find mobility submodule
         auto mobilityModules = getSubmodulesOfType<TraCIMobility>(getParentModule());

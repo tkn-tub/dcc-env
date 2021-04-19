@@ -26,10 +26,23 @@ simple DCCApp like IBaseApplLayer
 {
     parameters:
         @class(veins::dcc::DCCApp);
+
+        // beacon parameters
         int headerLength = default(88bit) @unit(bit); //header length of the application
         int beaconLengthBits = default(256bit) @unit(bit); //the length of a beacon packet
-        double beaconInterval = default(1s) @unit(s); //the intervall between 2 beacon messages
         int beaconUserPriority = default(7); //the user priority (UP) of the beacon messages
+
+        // DCC parameters
+        double beaconIntervalRelaxed = default(0.1s) @unit(s); //the intervall between 2 beacon messages in the relaxed state
+        double beaconIntervalActive = default(0.4s) @unit(s); //the intervall between 2 beacon messages in the active state
+        double beaconIntervalRestrictive = default(1s) @unit(s); //the intervall between 2 beacon messages in the restrictied state
+        double rampUpWindow = default(1s) @unit(s); // window size to compute channel busy ratio for becoming more restrictive
+        double rampDownWindow = default(5s) @unit(s); // window size to compute channel busy ratio for becoming more relaxed
+
+        double relaxedToActiveThreshold = default(0.15); // threshold for channelBusyRatio to go from relaxed to active
+        double activeToRelaxedThreshold = default(0.15); // threshold for channelBusyRatio to go from active to relaxed
+        double activeToRestrictiveThreshold = default(0.4); // threshold for channelBusyRatio to go from active to restrictive
+        double restrictiveToActiveThreshold = default(0.4); // threshold for channelBusyRatio to go from restrictive to active
     gates:
         input lowerLayerIn; // from mac layer
         output lowerLayerOut; // to mac layer

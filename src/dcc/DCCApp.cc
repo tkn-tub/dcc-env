@@ -41,8 +41,8 @@ void DCCApp::initialize(int stage)
         // set up beaconing timer
         auto triggerBeacon = [this]() { this->beacon(); };
         auto timerSpec = TimerSpecification(triggerBeacon)
-            .relativeStart(uniform(0, par("beaconInterval")))
-            .interval(par("beaconInterval"));
+            .relativeStart(uniform(0, par("beaconIntervalRelaxed")))
+            .interval(par("beaconIntervalRelaxed"));
         timerManager.create(timerSpec);
 
         // find mobility submodule

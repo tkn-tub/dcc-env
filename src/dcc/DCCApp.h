@@ -45,6 +45,12 @@ public:
     void beacon();
     void handleLowerMsg(cMessage* msg) override;
 
+    enum class State {
+        RELAXED,
+        ACTIVE,
+        RESTRICTIVE,
+    };
+
 protected:
     SignalManager signalManager;
     TimerManager timerManager{this};
@@ -52,9 +58,16 @@ protected:
 
 private:
     std::vector<std::pair<simtime_t, bool>> channelBusyHistory;
+    TimerManager::TimerHandle beaconHandle;
+    State state = State::RESTRICTIVE;
+
 
     double channelBusyRatio(simtime_t windowSize) const;
+    void sampleDCC();
+    void switchToState(State newState);
 };
+
+std::ostream& operator<<(std::ostream& os, DCCApp::State state);
 
 } // namespace dcc
 } // namespace veins

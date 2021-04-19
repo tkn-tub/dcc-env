@@ -40,10 +40,17 @@ void DCCApp::initialize(int stage)
     if (stage == 0) {
         // set up beaconing timer
         auto triggerBeacon = [this]() { this->beacon(); };
-        auto timerSpec = TimerSpecification(triggerBeacon)
+        auto timerSpecBeacon = TimerSpecification(triggerBeacon)
             .relativeStart(uniform(0, par("beaconIntervalRelaxed")))
             .interval(par("beaconIntervalRelaxed"));
-        timerManager.create(timerSpec);
+        beaconHandle = timerManager.create(timerSpecBeacon);
+
+        // set up sampling timer
+        auto triggerSampling = [this]() { this->sampleDCC(); };
+        auto timerSpecSampling = TimerSpecification(triggerSampling)
+            .relativeStart(uniform(0, par("beaconIntervalRelaxed")))
+            .interval(par("beaconIntervalRelaxed"));
+        timerManager.create(timerSpecSampling);
 
         // find mobility submodule
         auto mobilityModules = getSubmodulesOfType<TraCIMobility>(getParentModule());
@@ -122,6 +129,47 @@ double DCCApp::channelBusyRatio(simtime_t windowSize) const
     }
     EV_TRACE << "Channel busy time was " << busyTime << " for window " << windowSize << "\n";
     return busyTime / windowSize;
+}
+
+void DCCApp::sampleDCC()
+{
+    double channelBusyRatioUp = channelBusyRatio(par("rampUpWindow"));
+    double channelBusyRatioDown = channelBusyRatio(par("rampDownWindow"));
+    EV_INFO << "DCC state check. "
+        << "Ramp-Up/Ramp-Down Busy Ratio: " << channelBusyRatioUp << " / " << channelBusyRatioDown << ".\n";
+
+    switch (state) {
+        case State::RELAXED:
+            if (channelBusyRatioUp >= par("relaxedToActiveThreshold").doubleValue()) switchToState(State::ACTIVE);
+            break;
+        case State::ACTIVE:
+            if (channelBusyRatioUp >= par("activeToRestrictiveThreshold").doubleValue()) switchToState(State::RESTRICTIVE);
+            if (channelBusyRatioDown < par("activeToRelaxedThreshold").doubleValue()) switchToState(State::RELAXED);
+            break;
+        case State::RESTRICTIVE:
+            if (channelBusyRatioDown < par("restrictiveToActiveThreshold").doubleValue()) switchToState(State::ACTIVE);
+            break;
+    }
+}
+
+void DCCApp::switchToState(State newState)
+{
+    EV_INFO << "DCC state switch: " << state << " -> " << newState << "\n";
+    state = newState;
+
+    // TODO: re-schedule next beacon
+}
+
+std::ostream& operator<<(std::ostream& os, DCCApp::State state)
+{
+    switch(state)
+    {
+        case DCCApp::State::RELAXED: os << "RELAXED"; break;
+        case DCCApp::State::ACTIVE: os << "ACTIVE"; break;
+        case DCCApp::State::RESTRICTIVE: os << "RESTRICTIVE"; break;
+        default    : os.setstate(std::ios_base::failbit);
+    }
+    return os;
 }
 
 } // namespace dcc

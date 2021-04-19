@@ -56,7 +56,11 @@ void DCCApp::initialize(int stage)
         // register to channel busy/idle change signals
         auto channelBusyCallback = [this](veins::SignalPayload<bool> payload) {
             channelBusyHistory.emplace_back(simTime(), payload.p);
-            // TODO: remove old entries!
+            // prune old entries
+            simtime_t windowEnd = simTime() - std::max(par("rampUpWindow").doubleValue(), par("rampDownWindow").doubleValue());
+            while (channelBusyHistory.front().first < windowEnd) {
+                channelBusyHistory.erase(channelBusyHistory.begin());
+            }
         };
         signalManager.subscribeCallback(getParentModule(), Mac1609_4::sigChannelBusy, channelBusyCallback);
     }

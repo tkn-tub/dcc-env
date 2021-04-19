@@ -94,7 +94,7 @@ void DCCApp::beacon()
 
 void DCCApp::handleLowerMsg(cMessage* msg)
 {
-    EV_INFO << "Received beacon.\n";
+    EV_TRACE << "Received beacon.\n";
     cancelAndDelete(msg);
 }
 
@@ -162,7 +162,7 @@ void DCCApp::sampleDCC()
 {
     double channelBusyRatioUp = channelBusyRatio(par("rampUpWindow"));
     double channelBusyRatioDown = channelBusyRatio(par("rampDownWindow"));
-    EV_INFO << "DCC state check. "
+    EV_TRACE << "DCC state check. "
         << "Ramp-Up/Ramp-Down Busy Ratio: " << channelBusyRatioUp << " / " << channelBusyRatioDown << ".\n";
 
     switch (state) {

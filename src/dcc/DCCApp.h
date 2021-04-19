@@ -23,6 +23,7 @@
 #include "veins/veins.h"
 
 #include "veins/base/modules/BaseApplLayer.h"
+#include "veins/modules/utility/SignalManager.h"
 #include "veins/modules/utility/TimerManager.h"
 
 namespace veins {
@@ -45,10 +46,12 @@ public:
     void handleLowerMsg(cMessage* msg) override;
 
 protected:
+    SignalManager signalManager;
     TimerManager timerManager{this};
     BaseMobility* mobility;
 
 private:
+    std::vector<std::pair<simtime_t, bool>> channelBusyHistory;
 };
 
 } // namespace dcc

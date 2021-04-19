@@ -25,6 +25,7 @@
 #include "veins/modules/mobility/traci/TraCIMobility.h"
 #include "veins/modules/messages/DemoSafetyMessage_m.h"
 #include "veins/modules/utility/Consts80211p.h"
+#include "veins/modules/mac/ieee80211p/Mac1609_4.h"
 
 Define_Module(veins::dcc::DCCApp);
 
@@ -48,6 +49,13 @@ void DCCApp::initialize(int stage)
         auto mobilityModules = getSubmodulesOfType<TraCIMobility>(getParentModule());
         ASSERT(mobilityModules.size() == 1);
         mobility = mobilityModules.front();
+
+        // register to channel busy/idle change signals
+        auto channelBusyCallback = [this](veins::SignalPayload<bool> payload) {
+            channelBusyHistory.emplace_back(simTime(), payload.p);
+            // TODO: remove old entries!
+        };
+        signalManager.subscribeCallback(getParentModule(), Mac1609_4::sigChannelBusy, channelBusyCallback);
     }
 }
 

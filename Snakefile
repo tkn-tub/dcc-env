@@ -3,6 +3,9 @@ import glob
 rule all:
     input: ["src/experiment_dbg", "src/experiment"]
 
+rule doxy:
+    shell: "doxygen doxy.cfg"
+
 rule protobuf:
     input: "src/protobuf/{file}.proto"
     output:

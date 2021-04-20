@@ -6,6 +6,9 @@ src/experiment_dbg
 src/**/*_m.h
 src/**/*_m.cc
 
+doc/doxy
+doc/neddoc
+
 # compiled protobuf files
 src/protobuf/*.pb.h
 src/protobuf/*.pb.cc

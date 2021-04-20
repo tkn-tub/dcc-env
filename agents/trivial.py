@@ -20,12 +20,6 @@ gym.register(
 )
 
 
-def _serialize_action(actions):
-    logging.error("lel")
-    reply = veinsgym_pb2.Reply()
-    reply.action.box.values.extend(actions)
-    return reply.SerializeToString()
-
 
 def main():
     """
@@ -36,6 +30,11 @@ def main():
     env = gym.make("veins-v1")
     logging.info("Env created")
 
+    # Monkey-patch action to customize serialization
+    def _serialize_action(actions):
+        reply = veinsgym_pb2.Reply()
+        reply.action.box.values.extend(actions)
+        return reply.SerializeToString()
     setattr(env, "_serialize_action", _serialize_action)
 
     env.reset()

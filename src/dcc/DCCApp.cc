@@ -104,7 +104,7 @@ void DCCApp::handleLowerMsg(cMessage* msg)
     else {
         EV_INFO << "last info from " << (simTime() - neighbors[senderId].timestamp).inUnit(SIMTIME_MS) << "ms ago.\n";
     }
-    neighbors[senderId] = { senderId, beacon->getSenderPos(), beacon->getSenderSpeed(), SimTime() };
+    neighbors[senderId] = { senderId, beacon->getSenderPos(), beacon->getSenderSpeed(), simTime() };
     cancelAndDelete(msg);
 }
 

@@ -65,9 +65,9 @@ void GymConnection::initialize()
     veinsgym::proto::Request action_request;
     action_request.set_id(0);
     action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
-    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, 0.5);
+    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, computeReward());
     action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
-    action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, 0.5);
+    action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, computeReward());
     auto reply = communicate(action_request);
     EV_INFO << "GymConnection got action values: ";
     size_t index = 0;
@@ -93,9 +93,9 @@ void GymConnection::update()
     veinsgym::proto::Request action_request;
     action_request.set_id(simTime().inUnit(SIMTIME_S));
     action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
-    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, 0.5);
+    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, computeReward());
     action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
-    action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, 0.5);
+    action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, computeReward());
     auto reply = communicate(action_request);
     std::copy(
         reply.action().box().values().begin(),
@@ -116,6 +116,7 @@ void GymConnection::handleMessage(cMessage* msg)
 
 void GymConnection::finish()
 {
+    // TODO clean shutdown: send shutdown packet
     EV_TRACE << "Finish called for GymConnection.\n";
 }
 
@@ -132,4 +133,12 @@ veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request reque
         reply.ParseFromString(response);
     }
     return reply;
+}
+
+double GymConnection::computeObservations() {
+    return .5; // TODO improve even further
+}
+
+double GymConnection::computeReward() {
+    return .5; // TODO improve even further
 }

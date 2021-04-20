@@ -38,6 +38,9 @@ public:
 protected:
     veins::TimerManager timerManager{this};
 private:
+    double computeObservations();
+    double computeReward();
+
     zmq::context_t context = zmq::context_t(1);
     zmq::socket_t socket = zmq::socket_t(context, zmq::socket_type::req);
     std::array<double, 4> config;

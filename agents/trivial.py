@@ -14,7 +14,7 @@ gym.register(
     entry_point="veins_gym:VeinsEnv",
     kwargs={
         "scenario_dir": "../scenario",
-        "timeout": 20.0,  # increase timeout as the whole simulation needs to run
+        "timeout": 5.,
         "print_veins_stdout": True,
     },
 )

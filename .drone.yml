@@ -12,3 +12,9 @@ steps:
     - snakemake -jall
     - cd scenario
     - ./run -- -u Cmdenv -c NoGymConnection --cmdenv-express-mode=true --sim-time-limit=10s
+
+- name: docs
+  image: hrektts/doxygen
+  commands:
+    - export PATH="$PATH:/opt/omnetpp/bin:/opt/sumo/bin"
+    - doxygen doxy.cfg

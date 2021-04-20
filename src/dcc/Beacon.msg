@@ -30,6 +30,7 @@ class noncobject Coord;
 
 packet Beacon extends BaseFrame1609_4 {
     string senderId;
+    string senderState; // DCC state
     Coord senderPos;
     Coord senderSpeed;
 }

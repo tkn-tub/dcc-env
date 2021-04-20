@@ -85,6 +85,9 @@ void DCCApp::beacon()
     beacon->setSenderPos(mobility->getPositionAt(simTime()));
     beacon->setSenderSpeed(mobility->getCurrentSpeed());
     beacon->setSenderId(getParentModule()->getFullPath().c_str());
+    std::stringstream stateStringStream;
+    stateStringStream << state;
+    beacon->setSenderState(stateStringStream.str().c_str());
     beacon->setPsid(-1);
     beacon->setChannelNumber(static_cast<int>(Channel::cch));
     beacon->addBitLength(par("beaconLengthBits").intValue());
@@ -97,7 +100,7 @@ void DCCApp::handleLowerMsg(cMessage* msg)
 {
     auto* beacon = check_and_cast<Beacon*>(msg);
     std::string senderId{beacon->getSenderId()};
-    EV_INFO << "Received beacon from " << senderId << " at " << getParentModule()->getFullPath() << "; ";
+    EV_INFO << "Received beacon from " << senderId << "(" << beacon->getSenderState() << ") at " << getParentModule()->getFullPath() << "; ";
     if (neighbors.find(senderId) == neighbors.end()) {
         EV_INFO << "previously unknown\n";
     }

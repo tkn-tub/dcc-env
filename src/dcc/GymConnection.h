@@ -25,6 +25,7 @@
 #include <zmq/zmq.hpp>
 #include <omnetpp.h>
 #include "protobuf/veinsgym.pb.h"
+#include "veins/modules/utility/TimerManager.h"
 
 
 class GymConnection : public omnetpp::cSimpleModule {
@@ -32,7 +33,14 @@ public:
     void initialize() override;
     void finish() override;
     veinsgym::proto::Reply communicate(veinsgym::proto::Request request);
+    std::array<double, 4> getConfig() const;
+    void handleMessage(cMessage* msg) override;
+protected:
+    veins::TimerManager timerManager{this};
 private:
     zmq::context_t context = zmq::context_t(1);
     zmq::socket_t socket = zmq::socket_t(context, zmq::socket_type::req);
+    std::array<double, 4> config;
+
+    void update();
 };

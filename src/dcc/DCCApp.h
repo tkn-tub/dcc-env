@@ -72,6 +72,10 @@ private:
     TimerManager::TimerHandle beaconHandle = 0;
     State state = State::RESTRICTIVE;
 
+    double relaxedToActiveThreshold;     // threshold for channelBusyRatio to go from relaxed to active
+    double activeToRelaxedThreshold;     // threshold for channelBusyRatio to go from active to relaxed
+    double activeToRestrictiveThreshold; // threshold for channelBusyRatio to go from active to restrictive 
+    double restrictiveToActiveThreshold; // threshold for channelBusyRatio to go from restrictive to active 
 
     double channelBusyRatio(simtime_t windowSize) const;
     simtime_t currentBeaconInterval() const;

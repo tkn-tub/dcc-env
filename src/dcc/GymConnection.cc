@@ -59,6 +59,55 @@ void GymConnection::initialize()
     *(init_request.mutable_init()->mutable_observation_space_code()) = par("observation_space").stdstringValue();
     *(init_request.mutable_init()->mutable_action_space_code()) = par("action_space").stdstringValue();
     communicate(init_request); // ignore (empty) reply
+
+    // now talk to the agent again to get the first action
+    EV_INFO << "GymConnection asking the agent for the initial config\n";
+    veinsgym::proto::Request action_request;
+    action_request.set_id(0);
+    auto *values = action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values();
+    // *values = {observation.begin(), observation.end()};
+    action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
+    // request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, reward);
+    auto reply = communicate(action_request);
+    EV_INFO << "GymConnection got action values: ";
+    size_t index = 0;
+    for (auto value: reply.action().box().values()) {
+        config[index] = value;
+        ++index;
+        EV_INFO << value << ", ";
+    }
+    EV_INFO << std::endl;
+    ASSERT(index == 4);
+
+    // set up regular communication timer
+    timerManager.create(
+        veins::TimerSpecification([this]() { this->update(); })
+        .relativeStart(1.0)
+        .interval(1.0)
+    );
+}
+
+void GymConnection::update()
+{
+    EV_INFO << "GymConnection communicating with the agent in a regular interval\n";
+    veinsgym::proto::Request action_request;
+    action_request.set_id(simTime().inUnit(SIMTIME_S));
+    auto *values = action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values();
+    // *values = {observation.begin(), observation.end()};
+    action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
+    // request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, reward);
+    auto reply = communicate(action_request);
+    // TODO: add observations and maybe use reply
+}
+
+std::array<double, 4> GymConnection::getConfig() const
+{
+    return config;
+}
+
+void GymConnection::handleMessage(cMessage* msg)
+{
+    timerManager.handleMessage(msg);
 }
 
 void GymConnection::finish()

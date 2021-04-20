@@ -26,6 +26,7 @@
 #include "veins/modules/utility/Consts80211p.h"
 #include "veins/modules/mac/ieee80211p/Mac1609_4.h"
 #include "dcc/Beacon_m.h"
+#include "dcc/GymConnection.h"
 
 Define_Module(veins::dcc::DCCApp);
 
@@ -63,6 +64,13 @@ void DCCApp::initialize(int stage)
             }
         };
         signalManager.subscribeCallback(getParentModule(), Mac1609_4::sigChannelBusy, channelBusyCallback);
+
+        // get config from the Gym
+        auto& gymCon = *veins::FindModule<GymConnection*>::findGlobalModule();
+        relaxedToActiveThreshold = gymCon.getConfig()[0];
+        activeToRelaxedThreshold = gymCon.getConfig()[1];
+        activeToRestrictiveThreshold = gymCon.getConfig()[2];
+        restrictiveToActiveThreshold = gymCon.getConfig()[3];
     }
 }
 
@@ -183,14 +191,14 @@ void DCCApp::sampleDCC()
 
     switch (state) {
         case State::RELAXED:
-            if (channelBusyRatioUp >= par("relaxedToActiveThreshold").doubleValue()) switchToState(State::ACTIVE);
+            if (channelBusyRatioUp >= relaxedToActiveThreshold) switchToState(State::ACTIVE);
             break;
         case State::ACTIVE:
-            if (channelBusyRatioUp >= par("activeToRestrictiveThreshold").doubleValue()) switchToState(State::RESTRICTIVE);
-            if (channelBusyRatioDown < par("activeToRelaxedThreshold").doubleValue()) switchToState(State::RELAXED);
+            if (channelBusyRatioUp >= activeToRestrictiveThreshold) switchToState(State::RESTRICTIVE);
+            if (channelBusyRatioDown < activeToRelaxedThreshold) switchToState(State::RELAXED);
             break;
         case State::RESTRICTIVE:
-            if (channelBusyRatioDown < par("restrictiveToActiveThreshold").doubleValue()) switchToState(State::ACTIVE);
+            if (channelBusyRatioDown < restrictiveToActiveThreshold) switchToState(State::ACTIVE);
             break;
     }
 }

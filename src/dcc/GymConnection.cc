@@ -64,10 +64,10 @@ void GymConnection::initialize()
     EV_INFO << "GymConnection asking the agent for the initial config\n";
     veinsgym::proto::Request action_request;
     action_request.set_id(0);
-    auto *values = action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values();
-    // *values = {observation.begin(), observation.end()};
+    action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
+    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, 0.5);
     action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
-    // request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, reward);
+    action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, 0.5);
     auto reply = communicate(action_request);
     EV_INFO << "GymConnection got action values: ";
     size_t index = 0;
@@ -92,12 +92,16 @@ void GymConnection::update()
     EV_INFO << "GymConnection communicating with the agent in a regular interval\n";
     veinsgym::proto::Request action_request;
     action_request.set_id(simTime().inUnit(SIMTIME_S));
-    auto *values = action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values();
-    // *values = {observation.begin(), observation.end()};
+    action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
+    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, 0.5);
     action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
-    // request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, reward);
+    action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, 0.5);
     auto reply = communicate(action_request);
-    // TODO: add observations and maybe use reply
+    std::copy(
+        reply.action().box().values().begin(),
+        reply.action().box().values().end(),
+        config.begin()
+    );
 }
 
 std::array<double, 4> GymConnection::getConfig() const

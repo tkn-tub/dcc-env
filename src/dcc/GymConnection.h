@@ -30,6 +30,7 @@
 class GymConnection : public omnetpp::cSimpleModule {
 public:
     void initialize() override;
+    void finish() override;
     veinsgym::proto::Reply communicate(veinsgym::proto::Request request);
 private:
     zmq::context_t context = zmq::context_t(1);

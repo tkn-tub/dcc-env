@@ -68,6 +68,7 @@ void DCCApp::initialize(int stage)
 
 void DCCApp::finish()
 {
+    EV_TRACE << "Finish called for DCCApp of " << getParentModule()->getFullPath() << ".\n";
 }
 
 void DCCApp::handleSelfMsg(cMessage* msg)

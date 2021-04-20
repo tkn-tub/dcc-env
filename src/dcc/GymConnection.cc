@@ -61,6 +61,11 @@ void GymConnection::initialize()
     communicate(init_request); // ignore (empty) reply
 }
 
+void GymConnection::finish()
+{
+    EV_TRACE << "Finish called for GymConnection.\n";
+}
+
 veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request request)
 {
     veinsgym::proto::Reply reply;

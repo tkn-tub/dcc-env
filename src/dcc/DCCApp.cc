@@ -96,7 +96,15 @@ void DCCApp::beacon()
 void DCCApp::handleLowerMsg(cMessage* msg)
 {
     auto* beacon = check_and_cast<Beacon*>(msg);
-    EV_INFO << "Received beacon from " << beacon->getSenderId() << " at " << getParentModule()->getFullPath() << ".\n";
+    std::string senderId{beacon->getSenderId()};
+    EV_INFO << "Received beacon from " << senderId << " at " << getParentModule()->getFullPath() << "; ";
+    if (neighbors.find(senderId) == neighbors.end()) {
+        EV_INFO << "previously unknown\n";
+    }
+    else {
+        EV_INFO << "last info from " << (simTime() - neighbors[senderId].timestamp).inUnit(SIMTIME_MS) << "ms ago.\n";
+    }
+    neighbors[senderId] = { senderId, beacon->getSenderPos(), beacon->getSenderSpeed(), SimTime() };
     cancelAndDelete(msg);
 }
 

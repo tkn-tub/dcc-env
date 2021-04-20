@@ -22,7 +22,10 @@
 
 #include "veins/veins.h"
 
+#include <unordered_map>
+
 #include "veins/base/modules/BaseApplLayer.h"
+#include "veins/base/utils/Coord.h"
 #include "veins/modules/utility/SignalManager.h"
 #include "veins/modules/utility/TimerManager.h"
 
@@ -51,10 +54,18 @@ public:
         RESTRICTIVE,
     };
 
+    struct Neighbor {
+        std::string vehicleId;
+        Coord position;
+        Coord speed;
+        simtime_t timestamp;
+    };
+
 protected:
     SignalManager signalManager;
     TimerManager timerManager{this};
     BaseMobility* mobility;
+    std::unordered_map<std::string, Neighbor> neighbors;
 
 private:
     std::vector<std::pair<simtime_t, bool>> channelBusyHistory;

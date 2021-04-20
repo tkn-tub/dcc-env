@@ -60,7 +60,7 @@ network ManhattanScenario
             parameters:
                 @display("p=512,128");
         }
-        // gym_connection: GymConnection {}
+        gym_connection: GymConnection {}
         node[0]: Car {
         }
 

@@ -11,4 +11,4 @@ steps:
     - python3 -m pip install snakemake
     - snakemake -jall
     - cd scenario
-    - ./run -- -u Cmdenv --cmdenv-express-mode=true --sim-time-limit=10s
+    - ./run -- -u Cmdenv -c NoGymConnection --cmdenv-express-mode=true --sim-time-limit=10s

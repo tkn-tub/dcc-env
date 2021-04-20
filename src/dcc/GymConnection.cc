@@ -26,6 +26,11 @@ Define_Module(GymConnection);
 
 void GymConnection::initialize()
 {
+    // do we want to use this at all?
+    if (!par("enable")) {
+        return;
+    }
+
     // determine host and port from params and ENV variables
     std::string host = par("host");
     int port = par("port");
@@ -50,20 +55,23 @@ void GymConnection::initialize()
     EV_INFO << "Connecting to server 'tcp://" << host << ":" << port << "'\n";
     socket.connect("tcp://" + host + ":" + std::to_string(port));
 
-	veinsgym::proto::Request init_request;
-	*(init_request.mutable_init()->mutable_observation_space_code()) = par("observation_space").stdstringValue();
-	*(init_request.mutable_init()->mutable_action_space_code()) = par("action_space").stdstringValue();
-	communicate(init_request); // ignore (empty) reply
+    veinsgym::proto::Request init_request;
+    *(init_request.mutable_init()->mutable_observation_space_code()) = par("observation_space").stdstringValue();
+    *(init_request.mutable_init()->mutable_action_space_code()) = par("action_space").stdstringValue();
+    communicate(init_request); // ignore (empty) reply
 }
 
 veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request request)
 {
-    std::string request_msg = request.SerializeAsString();
-    socket.send(zmq::message_t(request_msg.data(), request_msg.size()), zmq::send_flags::none);
-    zmq::message_t response_msg;
-    socket.recv(response_msg);
-    std::string response(static_cast<char*>(response_msg.data()), response_msg.size());
     veinsgym::proto::Reply reply;
-    reply.ParseFromString(response);
+    // do we want to use this at all?
+    if (par("enable")) {
+        std::string request_msg = request.SerializeAsString();
+        socket.send(zmq::message_t(request_msg.data(), request_msg.size()), zmq::send_flags::none);
+        zmq::message_t response_msg;
+        socket.recv(response_msg);
+        std::string response(static_cast<char*>(response_msg.data()), response_msg.size());
+        reply.ParseFromString(response);
+    }
     return reply;
 }

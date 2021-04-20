@@ -25,6 +25,7 @@ package dcc;
 
 simple GymConnection {
 	@class(GymConnection);
+	bool enable = default(true); // whether to use the connection at all or just run the Veins scenario without connecting
 	string host = default("127.0.0.1"); // tcp port of the gym server
 	int port = default(5555); // tcp port of the gym server
 	string observation_space; // python code to set up the observation space in a gym

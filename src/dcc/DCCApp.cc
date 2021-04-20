@@ -23,9 +23,9 @@
 #include "veins/base/utils/FindModule.h"
 #include "veins/base/modules/BaseMobility.h"
 #include "veins/modules/mobility/traci/TraCIMobility.h"
-#include "veins/modules/messages/DemoSafetyMessage_m.h"
 #include "veins/modules/utility/Consts80211p.h"
 #include "veins/modules/mac/ieee80211p/Mac1609_4.h"
+#include "dcc/Beacon_m.h"
 
 Define_Module(veins::dcc::DCCApp);
 
@@ -78,23 +78,25 @@ void DCCApp::handleSelfMsg(cMessage* msg)
 void DCCApp::beacon()
 {
     // just some demo content
-    auto* dsm = new DemoSafetyMessage();
+    auto* beacon = new Beacon();
 
-    dsm->setRecipientAddress(LAddress::L2BROADCAST());
-    dsm->setBitLength(par("headerLength").intValue());
-    dsm->setSenderPos(mobility->getPositionAt(simTime()));
-    dsm->setSenderSpeed(mobility->getCurrentSpeed());
-    dsm->setPsid(-1);
-    dsm->setChannelNumber(static_cast<int>(Channel::cch));
-    dsm->addBitLength(par("beaconLengthBits").intValue());
-    dsm->setUserPriority(par("beaconUserPriority").intValue());
+    beacon->setRecipientAddress(LAddress::L2BROADCAST());
+    beacon->setBitLength(par("headerLength").intValue());
+    beacon->setSenderPos(mobility->getPositionAt(simTime()));
+    beacon->setSenderSpeed(mobility->getCurrentSpeed());
+    beacon->setSenderId(getParentModule()->getFullPath().c_str());
+    beacon->setPsid(-1);
+    beacon->setChannelNumber(static_cast<int>(Channel::cch));
+    beacon->addBitLength(par("beaconLengthBits").intValue());
+    beacon->setUserPriority(par("beaconUserPriority").intValue());
 
-    sendDown(dsm);
+    sendDown(beacon);
 }
 
 void DCCApp::handleLowerMsg(cMessage* msg)
 {
-    EV_TRACE << "Received beacon.\n";
+    auto* beacon = check_and_cast<Beacon*>(msg);
+    EV_INFO << "Received beacon from " << beacon->getSenderId() << " at " << getParentModule()->getFullPath() << ".\n";
     cancelAndDelete(msg);
 }
 

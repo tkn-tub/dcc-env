@@ -3,6 +3,8 @@ out
 src/Makefile
 src/experiment
 src/experiment_dbg
+src/**/*_m.h
+src/**/*_m.cc
 
 # compiled protobuf files
 src/protobuf/*.pb.h

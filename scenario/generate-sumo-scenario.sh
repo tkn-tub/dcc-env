@@ -6,7 +6,7 @@ GRID_SIZE=6
 GRID_LENGTH=100
 BUILDING_OFFSET=10
 SCENARIO=manhattan
-NUM_FLOWS=100
+NUM_FLOWS=200
 
 netgenerate --grid --grid.number $GRID_SIZE --grid.length $GRID_LENGTH --no-turnarounds -o $SCENARIO.net.xml
 

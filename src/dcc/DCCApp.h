@@ -37,19 +37,6 @@ namespace dcc {
 
 class DCCApp : public BaseApplLayer {
 public:
-    ~DCCApp() override = default;
-
-    // OMNeT++ module interface implementation
-    void initialize(int stage) override;
-    void finish() override;
-    void handleSelfMsg(cMessage* msg) override;
-
-    // CAM sending
-    void beacon();
-    void handleLowerMsg(cMessage* msg) override;
-
-    double channelBusyRatio(simtime_t windowSize) const;
-
     enum class State {
         relaxed,
         active,
@@ -62,6 +49,21 @@ public:
         Coord speed;
         simtime_t timestamp;
     };
+
+    ~DCCApp() override = default;
+
+    // OMNeT++ module interface implementation
+    void initialize(int stage) override;
+    void finish() override;
+    void handleSelfMsg(cMessage* msg) override;
+
+    // CAM sending
+    void beacon();
+    void handleLowerMsg(cMessage* msg) override;
+
+    double ageOfInformationScore() const;
+    double channelBusyRatio(simtime_t windowSize) const;
+    State getState() const { return state; }
 
 protected:
     SignalManager signalManager;

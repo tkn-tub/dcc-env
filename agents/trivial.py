@@ -9,16 +9,24 @@ import gym
 import veins_gym
 from veins_gym import veinsgym_pb2
 
+
+def serialize_action(actions):
+    """Searialize a list of floats into an action."""
+    reply = veinsgym_pb2.Reply()
+    reply.action.box.values.extend(actions)
+    return reply.SerializeToString()
+
+
 gym.register(
     id="veins-v1",
     entry_point="veins_gym:VeinsEnv",
     kwargs={
         "scenario_dir": "../scenario",
-        "timeout": 5.,
+        "timeout": 5.0,
         "print_veins_stdout": True,
+        "action_serializer": serialize_action,
     },
 )
-
 
 
 def main():
@@ -29,13 +37,6 @@ def main():
 
     env = gym.make("veins-v1")
     logging.info("Env created")
-
-    # Monkey-patch action to customize serialization
-    def _serialize_action(actions):
-        reply = veinsgym_pb2.Reply()
-        reply.action.box.values.extend(actions)
-        return reply.SerializeToString()
-    setattr(env, "_serialize_action", _serialize_action)
 
     env.reset()
     logging.info("Env reset")

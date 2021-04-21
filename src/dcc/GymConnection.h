@@ -38,7 +38,7 @@ public:
 protected:
     veins::TimerManager timerManager{this};
 private:
-    double computeObservations() const;
+    std::vector<double> computeObservations() const;
     double computeReward() const;
 
     zmq::context_t context = zmq::context_t(1);

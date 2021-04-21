@@ -22,6 +22,9 @@
 
 #include "dcc/GymConnection.h"
 
+#include "veins/modules/mobility/traci/TraCIScenarioManager.h"
+#include "dcc/DCCApp.h"
+
 Define_Module(GymConnection);
 
 void GymConnection::initialize()
@@ -92,8 +95,11 @@ void GymConnection::update()
     EV_INFO << "GymConnection communicating with the agent in a regular interval\n";
     veinsgym::proto::Request action_request;
     action_request.set_id(simTime().inUnit(SIMTIME_S));
-    action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
-    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, computeReward());
+    auto observations = computeObservations();
+    for (size_t i = 0; i<observations.size(); ++i) {
+        action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
+        action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(i, observations[i]);
+    }
     action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
     action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, computeReward());
     auto reply = communicate(action_request);
@@ -118,6 +124,10 @@ void GymConnection::finish()
 {
     // TODO clean shutdown: send shutdown packet
     EV_TRACE << "Finish called for GymConnection.\n";
+    veinsgym::proto::Request request;
+    request.set_id(1);
+    *(request.mutable_shutdown()) = {};
+    communicate(request);
 }
 
 veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request request)
@@ -135,10 +145,26 @@ veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request reque
     return reply;
 }
 
-double GymConnection::computeObservations() const {
-    return .5; // TODO improve even further
+std::vector<double> GymConnection::computeObservations() const {
+    auto* scenarioManager = veins::TraCIScenarioManagerAccess().get();
+    auto hosts = scenarioManager->getManagedHosts();
+
+    double meanAgeOfInformationScore = 0;
+    for (const auto& host: hosts) {
+        auto *dccApp = check_and_cast<veins::dcc::DCCApp*>(host.second->getSubmodule("appl"));
+        meanAgeOfInformationScore += dccApp->channelBusyRatio(SimTime(1)) / hosts.size();
+    }
+    return {meanAgeOfInformationScore};
 }
 
 double GymConnection::computeReward() const {
-    return .5; // TODO improve even further
+    auto* scenarioManager = veins::TraCIScenarioManagerAccess().get();
+    auto hosts = scenarioManager->getManagedHosts();
+
+    double meanAgeOfInformationScore = 0;
+    for (const auto& host: hosts) {
+        auto *dccApp = check_and_cast<veins::dcc::DCCApp*>(host.second->getSubmodule("appl"));
+        meanAgeOfInformationScore += dccApp->ageOfInformationScore() / hosts.size();
+    }
+    return meanAgeOfInformationScore;
 }

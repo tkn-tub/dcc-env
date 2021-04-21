@@ -135,10 +135,10 @@ veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request reque
     return reply;
 }
 
-double GymConnection::computeObservations() {
+double GymConnection::computeObservations() const {
     return .5; // TODO improve even further
 }
 
-double GymConnection::computeReward() {
+double GymConnection::computeReward() const {
     return .5; // TODO improve even further
 }

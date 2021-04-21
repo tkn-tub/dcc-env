@@ -8,7 +8,7 @@ steps:
   commands:
     - export PATH="$PATH:/opt/omnetpp/bin:/opt/sumo/bin"
     - apt-get update && apt-get install -y python3-pip python3-wheel protobuf-compiler libprotobuf-dev libzmq3-dev
-    - python3 -m pip -r requirements.txt
+    - python3 -m pip install -r requirements.txt
     - snakemake -jall
     - cd scenario
     - ./run -- -u Cmdenv -c NoGymConnection --cmdenv-express-mode=true --sim-time-limit=10s

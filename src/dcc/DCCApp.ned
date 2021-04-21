@@ -36,7 +36,7 @@ simple DCCApp like IBaseApplLayer
         double beaconIntervalRelaxed = default(0.1s) @unit(s); //the intervall between 2 beacon messages in the relaxed state
         double beaconIntervalActive = default(0.4s) @unit(s); //the intervall between 2 beacon messages in the active state
         double beaconIntervalRestrictive = default(1s) @unit(s); //the intervall between 2 beacon messages in the restrictied state
-        double stateCheckInterval = default(1s) @unit(s); // the interval at which the state machine checks for changes
+        double stateCheckInterval = default(.1s) @unit(s); // the interval at which the state machine checks for changes, see TS 107 687 Table 3
         double rampUpWindow = default(1s) @unit(s); // window size to compute channel busy ratio for becoming more restrictive
         double rampDownWindow = default(5s) @unit(s); // window size to compute channel busy ratio for becoming more relaxed
 

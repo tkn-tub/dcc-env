@@ -48,6 +48,8 @@ public:
     void beacon();
     void handleLowerMsg(cMessage* msg) override;
 
+    double channelBusyRatio(simtime_t windowSize) const;
+
     enum class State {
         relaxed,
         active,
@@ -77,7 +79,6 @@ private:
     double activeToRestrictiveThreshold; // threshold for channelBusyRatio to go from active to restrictive 
     double restrictiveToActiveThreshold; // threshold for channelBusyRatio to go from restrictive to active 
 
-    double channelBusyRatio(simtime_t windowSize) const;
     simtime_t currentBeaconInterval() const;
     void rescheduleBeacon(simtime_t beaconInterval, TimerManager::TimerHandle handle=0);
     void sampleDCC();

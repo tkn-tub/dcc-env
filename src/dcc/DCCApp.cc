@@ -84,6 +84,41 @@ void DCCApp::handleSelfMsg(cMessage* msg)
     timerManager.handleMessage(msg);
 }
 
+double DCCApp::channelBusyRatio(simtime_t windowSize) const
+{
+    if (channelBusyHistory.empty()) {
+        EV_TRACE << "Channel busy history empty, considering as busy\n";
+        return 1.0;
+    }
+
+    simtime_t busyTime = 0;
+    simtime_t currentTime = simTime();
+    const simtime_t windowEnd = simTime() - windowSize;
+    for (auto&& iter = channelBusyHistory.rbegin(); iter != channelBusyHistory.rend(); ++iter) {
+        const simtime_t recordTime = iter->first;
+        const bool channelBusy = iter->second;
+
+        if (recordTime <= windowEnd) {
+            // end of window reached, take last section and return
+            if (channelBusy) { // channel is busy
+                busyTime += currentTime - windowEnd;
+            }
+            currentTime = windowEnd;
+            break;
+        }
+        if (channelBusy) { // channel is busy
+            busyTime += currentTime - recordTime;
+        }
+        currentTime = recordTime;
+    }
+
+    // make up for missing time if we don't have enough history -- we treat unknown time as busy time
+    busyTime += std::max(SimTime(0), currentTime - windowEnd);
+
+    EV_TRACE << "Channel busy time was " << busyTime << " for window " << windowSize << "\n";
+    return busyTime / windowSize;
+}
+
 void DCCApp::beacon()
 {
     // just some demo content
@@ -118,41 +153,6 @@ void DCCApp::handleLowerMsg(cMessage* msg)
     }
     neighbors[senderId] = { senderId, beacon->getSenderPos(), beacon->getSenderSpeed(), simTime() };
     cancelAndDelete(msg);
-}
-
-double DCCApp::channelBusyRatio(simtime_t windowSize) const
-{
-    if (channelBusyHistory.empty()) {
-        EV_TRACE << "Channel busy history empty, considering as busy\n";
-        return 1.0;
-    }
-
-    simtime_t busyTime = 0;
-    simtime_t currentTime = simTime();
-    const simtime_t windowEnd = simTime() - windowSize;
-    for (auto&& iter = channelBusyHistory.rbegin(); iter != channelBusyHistory.rend(); ++iter) {
-        const simtime_t recordTime = iter->first;
-        const bool channelBusy = iter->second;
-
-        if (recordTime <= windowEnd) {
-            // end of window reached, take last section and return
-            if (channelBusy) { // channel is busy
-                busyTime += currentTime - windowEnd;
-            }
-            currentTime = windowEnd;
-            break;
-        }
-        if (channelBusy) { // channel is busy
-            busyTime += currentTime - recordTime;
-        }
-        currentTime = recordTime;
-    }
-
-    // make up for missing time if we don't have enough history -- we treat unknown time as busy time
-    busyTime += std::max(SimTime(0), currentTime - windowEnd);
-
-    EV_TRACE << "Channel busy time was " << busyTime << " for window " << windowSize << "\n";
-    return busyTime / windowSize;
 }
 
 simtime_t DCCApp::currentBeaconInterval() const

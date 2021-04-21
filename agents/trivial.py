@@ -41,14 +41,13 @@ def main():
     env.reset()
     logging.info("Env reset")
     done = False
-    random_action = env.action_space.sample()
-    observation, reward, done, info = env.step(random_action)
+    fixed_action = [0.15, 0.15, 0.40, 0.40]
+    observation, reward, done, info = env.step(fixed_action)
     while not done:
-        random_action = env.action_space.sample()
-        observation, reward, done, info = env.step(random_action)
+        observation, reward, done, info = env.step(fixed_action)
         logging.debug(
             "Last action: %s, Reward: %.3f, Observation: %s",
-            random_action,
+            fixed_action,
             reward,
             observation,
         )

@@ -26,7 +26,7 @@ for row in $(seq 0 $(($GRID_SIZE - 2))); do
         let xmax=($row+1)*$GRID_LENGTH-$BUILDING_OFFSET
         let ymin=$col*$GRID_LENGTH+$BUILDING_OFFSET
         let ymax=($col+1)*$GRID_LENGTH-$BUILDING_OFFSET
-        echo "    <poly id=\"building-$row-$col\" type=\"building\" color=\"1.00,0.00,0.00\" fill=\"1\" layer=\"1\" shape=\" $xmin,$ymin $xmin,$ymax $xmax,$ymax $xmax,$ymin $xmin,$ymin\"/>" >> $SCENARIO.poly.xml
+        echo "    <poly id=\"building-$row-$col\" type=\"building\" color=\"0.75,0.75,0.75\" fill=\"1\" layer=\"1\" shape=\" $xmin,$ymin $xmin,$ymax $xmax,$ymax $xmax,$ymin $xmin,$ymin\"/>" >> $SCENARIO.poly.xml
         # echo "Building $row-$col: ($xmin, $ymin) to ($xmax, $ymax)"
     done
 done

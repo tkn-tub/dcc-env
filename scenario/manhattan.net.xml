@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on Fri Apr 16 15:42:48 2021 by Eclipse SUMO netgenerate Version 1.6.0
+<!-- generated on Wed Apr 21 16:02:53 2021 by Eclipse SUMO netgenerate Version 1.6.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netgenerateConfiguration.xsd">
 
     <grid_network>
         <grid value="true"/>
         <grid.number value="6"/>
+        <grid.length value="100"/>
     </grid_network>
 
     <output>

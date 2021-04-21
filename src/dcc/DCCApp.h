@@ -49,9 +49,9 @@ public:
     void handleLowerMsg(cMessage* msg) override;
 
     enum class State {
-        RELAXED,
-        ACTIVE,
-        RESTRICTIVE,
+        relaxed,
+        active,
+        restrictive,
     };
 
     struct Neighbor {
@@ -70,7 +70,7 @@ protected:
 private:
     std::vector<std::pair<simtime_t, bool>> channelBusyHistory;
     TimerManager::TimerHandle beaconHandle = 0;
-    State state = State::RESTRICTIVE;
+    State state = State::restrictive;
 
     double relaxedToActiveThreshold;     // threshold for channelBusyRatio to go from relaxed to active
     double activeToRelaxedThreshold;     // threshold for channelBusyRatio to go from active to relaxed

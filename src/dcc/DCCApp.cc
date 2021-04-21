@@ -158,13 +158,13 @@ double DCCApp::channelBusyRatio(simtime_t windowSize) const
 simtime_t DCCApp::currentBeaconInterval() const
 {
     switch (state) {
-        case State::RELAXED:
+        case State::relaxed:
             return par("beaconIntervalRelaxed").doubleValue();
             break;
-        case State::ACTIVE:
+        case State::active:
             return par("beaconIntervalActive").doubleValue();
             break;
-        case State::RESTRICTIVE:
+        case State::restrictive:
             return par("beaconIntervalRestrictive").doubleValue();
             break;
     }
@@ -190,15 +190,15 @@ void DCCApp::sampleDCC()
         << "Ramp-Up/Ramp-Down Busy Ratio: " << channelBusyRatioUp << " / " << channelBusyRatioDown << ".\n";
 
     switch (state) {
-        case State::RELAXED:
-            if (channelBusyRatioUp >= relaxedToActiveThreshold) switchToState(State::ACTIVE);
+        case State::relaxed:
+            if (channelBusyRatioUp >= relaxedToActiveThreshold) switchToState(State::active);
             break;
-        case State::ACTIVE:
-            if (channelBusyRatioUp >= activeToRestrictiveThreshold) switchToState(State::RESTRICTIVE);
-            if (channelBusyRatioDown < activeToRelaxedThreshold) switchToState(State::RELAXED);
+        case State::active:
+            if (channelBusyRatioUp >= activeToRestrictiveThreshold) switchToState(State::restrictive);
+            if (channelBusyRatioDown < activeToRelaxedThreshold) switchToState(State::relaxed);
             break;
-        case State::RESTRICTIVE:
-            if (channelBusyRatioDown < restrictiveToActiveThreshold) switchToState(State::ACTIVE);
+        case State::restrictive:
+            if (channelBusyRatioDown < restrictiveToActiveThreshold) switchToState(State::active);
             break;
     }
 }
@@ -217,9 +217,9 @@ std::ostream& operator<<(std::ostream& os, DCCApp::State state)
 {
     switch(state)
     {
-        case DCCApp::State::RELAXED: os << "RELAXED"; break;
-        case DCCApp::State::ACTIVE: os << "ACTIVE"; break;
-        case DCCApp::State::RESTRICTIVE: os << "RESTRICTIVE"; break;
+        case DCCApp::State::relaxed: os << "RELAXED"; break;
+        case DCCApp::State::active: os << "ACTIVE"; break;
+        case DCCApp::State::restrictive: os << "RESTRICTIVE"; break;
         default    : os.setstate(std::ios_base::failbit);
     }
     return os;

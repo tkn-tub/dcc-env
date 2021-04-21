@@ -23,7 +23,7 @@ gym.register(
     kwargs={
         "scenario_dir": "../scenario",
         "timeout": 5.0,
-        "print_veins_stdout": True,
+        "print_veins_stdout": False,
         "action_serializer": serialize_action,
     },
 )
@@ -46,6 +46,12 @@ def main():
     while not done:
         random_action = env.action_space.sample()
         observation, reward, done, info = env.step(random_action)
+        logging.debug(
+            "Last action: %s, Reward: %.3f, Observation: %s",
+            random_action,
+            reward,
+            observation,
+        )
 
 
 if __name__ == "__main__":

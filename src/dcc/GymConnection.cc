@@ -22,6 +22,9 @@
 
 #include "dcc/GymConnection.h"
 
+#include <algorithm>
+#include <tuple>
+
 #include "veins/modules/mobility/traci/TraCIScenarioManager.h"
 #include "dcc/DCCApp.h"
 
@@ -123,11 +126,11 @@ void GymConnection::handleMessage(cMessage* msg)
 void GymConnection::finish()
 {
     // TODO clean shutdown: send shutdown packet
-    EV_TRACE << "Finish called for GymConnection.\n";
+    EV_TRACE << "Finish called for GymConnection." << std::endl;
     veinsgym::proto::Request request;
     request.set_id(1);
     *(request.mutable_shutdown()) = {};
-    communicate(request);
+    std::ignore = communicate(request);
 }
 
 veinsgym::proto::Reply GymConnection::communicate(veinsgym::proto::Request request)

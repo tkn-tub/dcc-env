@@ -22,7 +22,7 @@ gym.register(
     entry_point="veins_gym:VeinsEnv",
     kwargs={
         "scenario_dir": "../scenario",
-        "timeout": 5.0,
+        "timeout": 15.0,
         "print_veins_stdout": False,
         "action_serializer": serialize_action,
     },

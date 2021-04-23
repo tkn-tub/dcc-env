@@ -84,19 +84,18 @@ void DCCApp::handleSelfMsg(cMessage* msg)
     timerManager.handleMessage(msg);
 }
 
-double DCCApp::ageOfInformationScore() const
+double DCCApp::ageOfInformationScore(double timeHorizon) const
 {
     // compute age of information score for neighbor table
     double score = 0;
 
-    for (auto neighbor: neighbors) {
+    for (auto&& neighbor: neighbors) {
         // compute some meaningful score from this
         const simtime_t age = simTime() - neighbor.second.timestamp;
-        double nscore = std::max(0.0, 10.0 - age.dbl()) * 0.1;
-        score += nscore;
+        score += std::max(0.0, timeHorizon - age.dbl());
     }
 
-    return score;
+    return score / timeHorizon;
 }
 
 double DCCApp::channelBusyRatio(simtime_t windowSize) const

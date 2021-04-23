@@ -61,7 +61,7 @@ public:
     void beacon();
     void handleLowerMsg(cMessage* msg) override;
 
-    double ageOfInformationScore() const;
+    double ageOfInformationScore(double timeHorizon) const;
     double channelBusyRatio(simtime_t windowSize) const;
     State getState() const { return state; }
 

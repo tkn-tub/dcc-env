@@ -30,4 +30,5 @@ simple GymConnection {
 	int port = default(5555); // tcp port of the gym server
 	string observation_space; // python code to set up the observation space in a gym
 	string action_space; // python code to set up the observation space in a gym
+	double ageOfInformationHorizon = default(3s) @unit(s); // The time horizon within which information about nodes is considered valueable
 }

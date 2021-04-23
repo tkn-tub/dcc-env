@@ -167,7 +167,7 @@ double GymConnection::computeReward() const {
     double meanAgeOfInformationScore = 0;
     for (const auto& host: hosts) {
         auto *dccApp = check_and_cast<veins::dcc::DCCApp*>(host.second->getSubmodule("appl"));
-        meanAgeOfInformationScore += dccApp->ageOfInformationScore() / hosts.size();
+        meanAgeOfInformationScore += dccApp->ageOfInformationScore(par("ageOfInformationHorizon").doubleValue());
     }
-    return meanAgeOfInformationScore;
+    return meanAgeOfInformationScore / hosts.size();
 }

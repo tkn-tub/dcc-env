@@ -70,8 +70,11 @@ void GymConnection::initialize()
     EV_INFO << "GymConnection asking the agent for the initial config\n";
     veinsgym::proto::Request action_request;
     action_request.set_id(0);
-    action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
-    action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(0, computeReward());
+    auto observations = computeObservations();
+    for (size_t i = 0; i<observations.size(); ++i) {
+        action_request.mutable_step()->mutable_observation()->mutable_box()->mutable_values()->Add();
+        action_request.mutable_step()->mutable_observation()->mutable_box()->set_values(i, observations[i]);
+    }
     action_request.mutable_step()->mutable_reward()->mutable_box()->mutable_values()->Add();
     action_request.mutable_step()->mutable_reward()->mutable_box()->set_values(0, computeReward());
     auto reply = communicate(action_request);

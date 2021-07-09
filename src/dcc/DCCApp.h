@@ -76,11 +76,6 @@ private:
     TimerManager::TimerHandle beaconHandle = 0;
     State state = State::restrictive;
 
-    double relaxedToActiveThreshold;     // threshold for channelBusyRatio to go from relaxed to active
-    double activeToRelaxedThreshold;     // threshold for channelBusyRatio to go from active to relaxed
-    double activeToRestrictiveThreshold; // threshold for channelBusyRatio to go from active to restrictive
-    double restrictiveToActiveThreshold; // threshold for channelBusyRatio to go from restrictive to active
-
     simtime_t currentBeaconInterval() const;
     void rescheduleBeacon(simtime_t beaconInterval, TimerManager::TimerHandle handle=0);
     void sampleDCC();

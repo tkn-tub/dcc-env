@@ -64,13 +64,6 @@ void DCCApp::initialize(int stage)
             }
         };
         signalManager.subscribeCallback(getParentModule(), Mac1609_4::sigChannelBusy, channelBusyCallback);
-
-        // get config from the Gym
-        auto& gymCon = *veins::FindModule<GymConnection*>::findGlobalModule();
-        relaxedToActiveThreshold = gymCon.getConfig()[0];
-        activeToRelaxedThreshold = gymCon.getConfig()[1];
-        activeToRestrictiveThreshold = gymCon.getConfig()[2];
-        restrictiveToActiveThreshold = gymCon.getConfig()[3];
     }
 }
 
@@ -202,6 +195,14 @@ void DCCApp::sampleDCC()
     double channelBusyRatioDown = channelBusyRatio(par("rampDownWindow"));
     EV_TRACE << "DCC state check. "
         << "Ramp-Up/Ramp-Down Busy Ratio: " << channelBusyRatioUp << " / " << channelBusyRatioDown << ".\n";
+
+
+    // get config from the Gym
+    auto& gymCon = *veins::FindModule<GymConnection*>::findGlobalModule();
+    double relaxedToActiveThreshold = gymCon.getConfig()[0];
+    double activeToRelaxedThreshold = gymCon.getConfig()[1];
+    double activeToRestrictiveThreshold = gymCon.getConfig()[2];
+    double restrictiveToActiveThreshold = gymCon.getConfig()[3];
 
     switch (state) {
         case State::relaxed:

@@ -4,6 +4,7 @@ Trivial example agent for the dcc environment.
 """
 
 import logging
+import os
 
 import gym
 import veins_gym
@@ -21,7 +22,11 @@ gym.register(
     id="veins-v1",
     entry_point="veins_gym:VeinsEnv",
     kwargs={
-        "scenario_dir": "../scenario",
+        "scenario_dir": os.path.relpath(
+            os.path.join(
+                os.path.dirname(os.path.abspath(__file__)), "..", "scenario"
+            )
+        ),
         "timeout": 15.0,
         "print_veins_stdout": False,
         "action_serializer": serialize_action,

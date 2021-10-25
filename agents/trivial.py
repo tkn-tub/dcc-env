@@ -30,6 +30,9 @@ gym.register(
         "timeout": 15.0,
         "print_veins_stdout": False,
         "action_serializer": serialize_action,
+        # to run in a GUI, use:
+        # "user_interface": "Qtenv",
+        # "timeout": -1,
     },
 )
 

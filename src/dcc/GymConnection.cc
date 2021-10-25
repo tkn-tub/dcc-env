@@ -155,12 +155,12 @@ std::vector<double> GymConnection::computeObservations() const {
     auto* scenarioManager = veins::TraCIScenarioManagerAccess().get();
     auto hosts = scenarioManager->getManagedHosts();
 
-    double meanAgeOfInformationScore = 0;
+    double meanChannelBusyRatio = 0;
     for (const auto& host: hosts) {
         auto *dccApp = check_and_cast<veins::dcc::DCCApp*>(host.second->getSubmodule("appl"));
-        meanAgeOfInformationScore += dccApp->channelBusyRatio(SimTime(1)) / hosts.size();
+        meanChannelBusyRatio += dccApp->channelBusyRatio(SimTime(1)) / hosts.size();
     }
-    return {meanAgeOfInformationScore};
+    return {meanChannelBusyRatio};
 }
 
 double GymConnection::computeReward() const {

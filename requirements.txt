@@ -1,2 +1,2 @@
 snakemake
-veins_gym>=0.2
+veins_gym>=0.3
